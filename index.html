@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamics of UK Sport and Global Governance Quiz</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .quiz-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 800px;
+            width: 100%;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .quiz-header {
+            margin-bottom: 30px;
+        }
+
+        .quiz-title {
+            color: #333;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .quiz-subtitle {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2c3e50, #3498db);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .question-container {
+            text-align: left;
+            margin-bottom: 30px;
+        }
+
+        .question-number {
+            color: #3498db;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .question-text {
+            font-size: 20px;
+            color: #333;
+            line-height: 1.5;
+            margin-bottom: 25px;
+            font-weight: 500;
+        }
+
+        .options-container {
+            display: grid;
+            gap: 12px;
+        }
+
+        .option {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 18px 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 16px;
+            text-align: left;
+        }
+
+        .option:hover {
+            border-color: #3498db;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.1);
+        }
+
+        .option.selected {
+            border-color: #3498db;
+            background: #e3f2fd;
+        }
+
+        .option.correct {
+            border-color: #28a745;
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .option.incorrect {
+            border-color: #dc3545;
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .option.disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .feedback {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: 500;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .feedback.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .feedback.correct {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .feedback.incorrect {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .next-button {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 20px;
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        .next-button.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .next-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.3);
+        }
+
+        .score-display {
+            font-size: 18px;
+            color: #333;
+            margin: 20px 0;
+            font-weight: 600;
+        }
+
+        .final-score {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .final-score h2 {
+            color: #333;
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px auto;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .restart-button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.2s ease;
+        }
+
+        .restart-button:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <div class="quiz-header">
+            <h1 class="quiz-title">UK Sport and Global Governance</h1>
+            <p class="quiz-subtitle">Dynamics Quiz</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+
+        <div id="quizContent">
+            <div class="question-container">
+                <div class="question-number" id="questionNumber"></div>
+                <div class="question-text" id="questionText"></div>
+                <div class="options-container" id="optionsContainer"></div>
+            </div>
+            
+            <div class="feedback" id="feedback"></div>
+            <button class="next-button" id="nextButton" onclick="nextQuestion()">Next Question</button>
+            
+            <div class="score-display" id="scoreDisplay"></div>
+        </div>
+
+        <div id="finalScore" class="final-score" style="display: none;">
+            <h2>Quiz Complete!</h2>
+            <div class="score-circle" id="finalScoreCircle"></div>
+            <p id="finalScoreText"></p>
+            <button class="restart-button" onclick="restartQuiz()">Try Again</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "Which of the following is NOT usually listed as a challenge for sport participation?",
+                options: ["Financial capacity", "Human capacity", "Technological capacity", "Structural capacity"],
+                correct: 2
+            },
+            {
+                question: "Which of these is frequently cited as a psychological barrier to sport engagement?",
+                options: ["Too inspiring", "Too boring", "Too easy", "Lack of opponents"],
+                correct: 1
+            },
+            {
+                question: "What unique offer do Council sport and leisure services provide?",
+                options: ["Exclusive high-cost services", "Services solely for elite athletes", "Affordable, universal and targeted services, and activities, that are simply not provided for elsewhere at such scale", "Only private, commercial facilities"],
+                correct: 2
+            },
+            {
+                question: "Since when has the devolution of public health from the National Health Service to local authorities allowed many councils to integrate physical activity into public health policy as a fundamental shift from treating ill-health to promoting wellbeing?",
+                options: ["2008", "2010", "2013", "2015"],
+                correct: 2
+            },
+            {
+                question: "What is the statutory provision for sport in local authorities?",
+                options: ["Local authorities are legally required to provide facilities and sporting activity", "Local authorities have a statutory duty to promote healthy lifestyles and provide sport", "There is no statutory provision for sport; there is no legal requirement for local authorities to provide facilities or sporting activity", "Local authorities are only required to provide facilities for elite sport"],
+                correct: 2
+            },
+            {
+                question: "What is the approximate gender gap in adult (16+) volunteers for sport and physical activity in England?",
+                options: ["0.5 million", "1 million", "1.3 million", "2 million"],
+                correct: 2
+            },
+            {
+                question: "How is international sport governed?",
+                options: ["By a single, ultimate authority over all organisations", "Primarily by governmental bodies with strict hierarchies", "By a complex network of almost entirely non-governmental organisations with no single organisation possessing ultimate authority over all of the others", "Solely by the International Olympic Committee"],
+                correct: 2
+            },
+            {
+                question: "Which of the following is NOT one of the five key outcomes of the DCMS (2015) Strategy for sport and physical activity in the UK, Sporting Future?",
+                options: ["Physical Wellbeing", "Mental Wellbeing", "Environmental Development", "Economic Development"],
+                correct: 2
+            },
+            {
+                question: "Hylton and Bramham (2008) suggest that sport development can be considered what?",
+                options: ["A straightforward process led by a single authority", "A contested process that is the responsibility of a multiplicity of different partners", "Exclusively focused on improving elite sports performance", "Primarily an economic development initiative"],
+                correct: 1
+            },
+            {
+                question: "What was a headline fiscal approach introduced by the Conservative Party-led coalition government in May 2010 to mitigate the impact of the economic downturn?",
+                options: ["The Olympic Legacy Fund", "The National Sport Investment Plan", "The Comprehensive Spending Review (CSR)", "The Active Lives Strategy"],
+                correct: 2
+            },
+            {
+                question: "For whom is the Code for Sports Governance a mandatory set of requirements?",
+                options: ["All sport organisations in the UK", "Only professional sport clubs", "Organisations seeking public funding from Sport England and/or UK Sport", "International Federations"],
+                correct: 2
+            },
+            {
+                question: "What is the primary means by which Global Sports Organisations (GSOs) generate enormous income?",
+                options: ["Government grants and subsidies", "Their invention, ownership and control of global sports events such as World Championships and the Olympic Games", "Membership fees from national federations", "Donations from individuals"],
+                correct: 1
+            },
+            {
+                question: "What is one stated benefit of good governance in sport?",
+                options: ["It guarantees Olympic medals for participating nations", "It ensures all sports facilities are privately owned", "It makes good policies that lead to good practice and improve participation", "It applies exclusively to the financial management of sport"],
+                correct: 2
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let answered = false;
+
+        function loadQuestion() {
+            const question = questions[currentQuestion];
+            
+            document.getElementById('questionNumber').textContent = `Question ${currentQuestion + 1} of ${questions.length}`;
+            document.getElementById('questionText').textContent = question.question;
+            
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+            
+            question.options.forEach((option, index) => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'option';
+                optionElement.textContent = option;
+                optionElement.onclick = () => selectAnswer(index);
+                optionsContainer.appendChild(optionElement);
+            });
+            
+            document.getElementById('feedback').className = 'feedback';
+            document.getElementById('nextButton').className = 'next-button';
+            
+            updateProgress();
+            updateScore();
+            answered = false;
+        }
+
+        function selectAnswer(selectedIndex) {
+            if (answered) return;
+            
+            answered = true;
+            const question = questions[currentQuestion];
+            const options = document.querySelectorAll('.option');
+            const feedback = document.getElementById('feedback');
+            const nextButton = document.getElementById('nextButton');
+            
+            options.forEach((option, index) => {
+                option.classList.add('disabled');
+                if (index === question.correct) {
+                    option.classList.add('correct');
+                } else if (index === selectedIndex) {
+                    option.classList.add('incorrect');
+                }
+            });
+            
+            if (selectedIndex === question.correct) {
+                score++;
+                feedback.textContent = '✓ Correct! Well done!';
+                feedback.className = 'feedback correct show';
+            } else {
+                feedback.textContent = `✗ Incorrect. The correct answer was: ${question.options[question.correct]}`;
+                feedback.className = 'feedback incorrect show';
+            }
+            
+            nextButton.classList.add('show');
+            updateScore();
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            
+            if (currentQuestion >= questions.length) {
+                showFinalScore();
+            } else {
+                loadQuestion();
+            }
+        }
+
+        function updateProgress() {
+            const progress = ((currentQuestion) / questions.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function updateScore() {
+            document.getElementById('scoreDisplay').textContent = `Score: ${score}/${questions.length}`;
+        }
+
+        function showFinalScore() {
+            document.getElementById('quizContent').style.display = 'none';
+            document.getElementById('finalScore').style.display = 'block';
+            
+            const percentage = Math.round((score / questions.length) * 100);
+            document.getElementById('finalScoreCircle').textContent = `${score}/${questions.length}`;
+            
+            let message = '';
+            if (percentage >= 90) {
+                message = '🏆 Outstanding! You have excellent knowledge of UK sport governance!';
+            } else if (percentage >= 80) {
+                message = '🎉 Great job! You have a strong understanding of the topic!';
+            } else if (percentage >= 70) {
+                message = '👍 Good work! You have a solid grasp of sport governance!';
+            } else if (percentage >= 60) {
+                message = '📚 Not bad! Consider reviewing the material for better results.';
+            } else {
+                message = '💪 Keep studying! You\'ll improve with more practice.';
+            }
+            
+            document.getElementById('finalScoreText').textContent = `${percentage}% - ${message}`;
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            answered = false;
+            
+            document.getElementById('quizContent').style.display = 'block';
+            document.getElementById('finalScore').style.display = 'none';
+            
+            loadQuestion();
+        }
+
+        // Initialize the quiz
+        loadQuestion();
+    </script>
+</body>
+</html>
